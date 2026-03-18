@@ -1,6 +1,7 @@
 from settings import *
 from world_objects.chunk import Chunk
 from voxel_handler import VoxelHandler
+from world_objects.mobs import MobManager
 
 
 class World:
@@ -11,9 +12,13 @@ class World:
         self.build_chunks()
         self.build_chunk_mesh()
         self.voxel_handler = VoxelHandler(self)
+        self.mob_manager = MobManager(self)
+        self.daylight = 1.0
 
     def update(self):
         self.voxel_handler.update()
+        self.mob_manager.update()
+        self.daylight = MIN_DAYLIGHT + (1.0 - MIN_DAYLIGHT) * (0.5 + 0.5 * glm.sin(2.0 * glm.pi() * self.app.time / DAY_LENGTH_SEC))
 
     def build_chunks(self):
         for x in range(WORLD_W):
@@ -37,3 +42,18 @@ class World:
     def render(self):
         for chunk in self.chunks:
             chunk.render()
+        self.mob_manager.render()
+
+    def get_voxel_id_at(self, x, y, z):
+        wx, wy, wz = int(x), int(y), int(z)
+        cx, cy, cz = wx // CHUNK_SIZE, wy // CHUNK_SIZE, wz // CHUNK_SIZE
+        if not (0 <= cx < WORLD_W and 0 <= cy < WORLD_H and 0 <= cz < WORLD_D):
+            return 0
+
+        chunk_index = cx + WORLD_W * cz + WORLD_AREA * cy
+        lx, ly, lz = wx % CHUNK_SIZE, wy % CHUNK_SIZE, wz % CHUNK_SIZE
+        voxel_index = lx + CHUNK_SIZE * lz + CHUNK_AREA * ly
+        return int(self.voxels[chunk_index][voxel_index])
+
+    def is_solid_at(self, x, y, z):
+        return self.get_voxel_id_at(x, y, z) != 0

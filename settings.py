@@ -46,14 +46,19 @@ PITCH_MAX = glm.radians(89)
 # player
 PLAYER_SPEED = 0.005
 PLAYER_ROT_SPEED = 0.003
-# PLAYER_POS = glm.vec3(CENTER_XZ, WORLD_H * CHUNK_SIZE, CENTER_XZ)
 PLAYER_POS = glm.vec3(CENTER_XZ, CHUNK_SIZE, CENTER_XZ)
 MOUSE_SENSITIVITY = 0.002
+PLAYER_WIDTH = 0.35
+PLAYER_HEIGHT = 1.8
+GRAVITY = 0.0025
+JUMP_SPEED = 0.055
+MAX_FALL_SPEED = 0.09
+PLAYER_MAX_HEALTH = 20
 
 # colors
 BG_COLOR = glm.vec3(0.58, 0.83, 0.99)
 
-# textures
+# textures / blocks
 SAND = 1
 GRASS = 2
 DIRT = 3
@@ -62,6 +67,33 @@ SNOW = 5
 LEAVES = 6
 WOOD = 7
 
+# extra block ids (rendered by reusing texture-array layers)
+COBBLESTONE = 8
+PLANKS = 9
+BRICK = 10
+CLAY = 11
+GLOWSTONE = 12
+
+INVENTORY_BLOCK_IDS = [
+    GRASS, DIRT, STONE, SAND, SNOW, LEAVES, WOOD,
+    COBBLESTONE, PLANKS, BRICK, CLAY, GLOWSTONE,
+]
+
+BLOCK_NAMES = {
+    GRASS: 'Herbe',
+    DIRT: 'Terre',
+    STONE: 'Pierre',
+    SAND: 'Sable',
+    SNOW: 'Neige',
+    LEAVES: 'Feuilles',
+    WOOD: 'Bois',
+    COBBLESTONE: 'Pierre taillée',
+    PLANKS: 'Planches',
+    BRICK: 'Briques',
+    CLAY: 'Argile',
+    GLOWSTONE: 'Pierre lumineuse',
+}
+
 # terrain levels
 SNOW_LVL = 54
 STONE_LVL = 49
@@ -69,10 +101,21 @@ DIRT_LVL = 40
 GRASS_LVL = 8
 SAND_LVL = 7
 
+# biomes
+BIOME_PLAINS = 0
+BIOME_DESERT = 1
+BIOME_MOUNTAINS = 2
+BIOME_SNOW = 3
+BIOME_SWAMP = 4
+
 # tree settings
 TREE_PROBABILITY = 0.02
 TREE_WIDTH, TREE_HEIGHT = 4, 8
 TREE_H_WIDTH, TREE_H_HEIGHT = TREE_WIDTH // 2, TREE_HEIGHT // 2
+
+# day/night and lighting
+DAY_LENGTH_SEC = 180.0
+MIN_DAYLIGHT = 0.2
 
 # water
 WATER_LINE = 5.6
@@ -81,3 +124,12 @@ WATER_AREA = 5 * CHUNK_SIZE * WORLD_W
 # cloud
 CLOUD_SCALE = 25
 CLOUD_HEIGHT = WORLD_H * CHUNK_SIZE * 2
+
+# mobs
+MOB_COUNT_PASSIVE = 8
+MOB_COUNT_HOSTILE = 6
+MOB_SPEED_PASSIVE = 0.01
+MOB_SPEED_HOSTILE = 0.013
+MOB_DAMAGE = 2
+MOB_ATTACK_COOLDOWN = 1.2
+MOB_DESPAWN_DIST = CHUNK_SIZE * 2

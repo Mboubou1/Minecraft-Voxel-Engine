@@ -46,7 +46,10 @@ class VoxelEngine:
 
         self.delta_time = self.clock.tick()
         self.time = pg.time.get_ticks() * 0.001
-        pg.display.set_caption(f'{self.clock.get_fps() :.0f}')
+        vh = self.scene.world.voxel_handler
+        block_name = BLOCK_NAMES.get(vh.new_voxel_id, str(vh.new_voxel_id))
+        mode = 'POSE' if vh.interaction_mode else 'CASSE'
+        pg.display.set_caption(f"FPS {self.clock.get_fps() :.0f} | {mode} | Bloc: {block_name} | Vie: {self.player.health} | Noclip: {'ON' if self.player.noclip else 'OFF'}")
 
     def render(self):
         self.ctx.clear(color=BG_COLOR)
