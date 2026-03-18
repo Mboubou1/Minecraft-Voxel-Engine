@@ -1,6 +1,10 @@
 from bootstrap import ensure_dependencies
 
-ensure_dependencies()
+try:
+    ensure_dependencies()
+except RuntimeError as exc:
+    print(f"[setup] {exc}")
+    raise SystemExit(1) from exc
 
 from settings import *
 import moderngl as mgl

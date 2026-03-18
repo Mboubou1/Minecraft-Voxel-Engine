@@ -4,6 +4,7 @@ Voxel Engine (like Minecraft) in Python and OpenGL.
 ## Installation automatique des dépendances
 - Au premier lancement, le jeu vérifie les dépendances Python et lance automatiquement `pip install -r requirements.txt` si nécessaire.
 - Un fichier marqueur `.first_launch_deps_ok` est créé pour éviter de relancer cette installation à chaque démarrage.
+- Versions Python supportées: `3.10` et `3.11` (les dépendances actuelles ne sont pas compatibles avec Python `3.12+`).
 
 ## Nouvelles fonctionnalités
 - Cycle jour/nuit + blocs émissifs (`GLOWSTONE`) pour une gestion de lumière simple.
