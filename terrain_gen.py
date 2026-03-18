@@ -4,7 +4,23 @@ from settings import *
 
 
 @njit
+def get_biome(x, z):
+    biome_noise = noise2(x * 0.0015 + 61.7, z * 0.0015 - 28.3)
+    if biome_noise < -0.45:
+        return BIOME_DESERT
+    if biome_noise < -0.1:
+        return BIOME_PLAINS
+    if biome_noise < 0.2:
+        return BIOME_SWAMP
+    if biome_noise < 0.55:
+        return BIOME_MOUNTAINS
+    return BIOME_SNOW
+
+
+@njit
 def get_height(x, z):
+    biome = get_biome(x, z)
+
     # island mask
     island = 1 / (pow(0.0025 * math.hypot(x - CENTER_XZ, z - CENTER_XZ), 20) + 0.0001)
     island = min(island, 1)
@@ -12,6 +28,15 @@ def get_height(x, z):
     # amplitude
     a1 = CENTER_Y
     a2, a4, a8 = a1 * 0.5, a1 * 0.25, a1 * 0.125
+
+    if biome == BIOME_DESERT:
+        a1 *= 0.65
+    elif biome == BIOME_MOUNTAINS:
+        a1 *= 1.55
+    elif biome == BIOME_SWAMP:
+        a1 *= 0.8
+    elif biome == BIOME_SNOW:
+        a1 *= 1.2
 
     # frequency
     f1 = 0.005
@@ -26,7 +51,7 @@ def get_height(x, z):
     height += noise2(x * f4, z * f4) * a4 + a4
     height += noise2(x * f8, z * f8) * a8 - a8
 
-    height = max(height,  noise2(x * f8, z * f8) + 2)
+    height = max(height, noise2(x * f8, z * f8) + 2)
     height *= island
 
     return int(height)
@@ -38,7 +63,7 @@ def get_index(x, y, z):
 
 
 @njit
-def set_voxel_id(voxels, x, y, z, wx, wy, wz, world_height):
+def set_voxel_id(voxels, x, y, z, wx, wy, wz, world_height, biome):
     voxel_id = 0
 
     if wy < world_height - 1:
@@ -48,30 +73,45 @@ def set_voxel_id(voxels, x, y, z, wx, wy, wz, world_height):
             voxel_id = 0
 
         else:
-            voxel_id = STONE
+            voxel_id = STONE if biome != BIOME_DESERT else SAND
     else:
         rng = int(7 * random())
         ry = wy - rng
-        if SNOW_LVL <= ry < world_height:
-            voxel_id = SNOW
 
-        elif STONE_LVL <= ry < SNOW_LVL:
-            voxel_id = STONE
-
-        elif DIRT_LVL <= ry < STONE_LVL:
-            voxel_id = DIRT
-
-        elif GRASS_LVL <= ry < DIRT_LVL:
-            voxel_id = GRASS
-
+        if biome == BIOME_DESERT:
+            voxel_id = SAND if random() > 0.08 else CLAY
+        elif biome == BIOME_SNOW:
+            voxel_id = SNOW if ry >= GRASS_LVL else DIRT
+        elif biome == BIOME_SWAMP:
+            voxel_id = DIRT if random() > 0.25 else LEAVES
+        elif biome == BIOME_MOUNTAINS:
+            if ry > STONE_LVL + 8:
+                voxel_id = SNOW
+            elif ry > GRASS_LVL:
+                voxel_id = STONE if random() > 0.12 else COBBLESTONE
+            else:
+                voxel_id = DIRT
         else:
-            voxel_id = SAND
+            if SNOW_LVL <= ry < world_height:
+                voxel_id = SNOW
+            elif STONE_LVL <= ry < SNOW_LVL:
+                voxel_id = STONE
+            elif DIRT_LVL <= ry < STONE_LVL:
+                voxel_id = DIRT
+            elif GRASS_LVL <= ry < DIRT_LVL:
+                voxel_id = GRASS
+            else:
+                voxel_id = SAND
+
+    # rare glowing stone veins underground
+    if voxel_id == STONE and wy < GRASS_LVL and random() < 0.004:
+        voxel_id = GLOWSTONE
 
     # setting ID
     voxels[get_index(x, y, z)] = voxel_id
 
-    # place tree
-    if wy < DIRT_LVL:
+    # place tree only in compatible biomes
+    if (biome == BIOME_PLAINS or biome == BIOME_SWAMP) and wy < DIRT_LVL:
         place_tree(voxels, x, y, z, voxel_id)
 
 

@@ -21,6 +21,7 @@ class ShaderProgram:
         self.chunk['u_texture_array_0'] = 1
         self.chunk['bg_color'].write(BG_COLOR)
         self.chunk['water_line'] = WATER_LINE
+        self.chunk['day_light'] = 1.0
 
         # marker
         self.voxel_marker['m_proj'].write(self.player.m_proj)
@@ -41,6 +42,8 @@ class ShaderProgram:
 
     def update(self):
         self.chunk['m_view'].write(self.player.m_view)
+        if hasattr(self.app, 'scene') and hasattr(self.app.scene, 'world'):
+            self.chunk['day_light'] = self.app.scene.world.daylight
         self.voxel_marker['m_view'].write(self.player.m_view)
         self.water['m_view'].write(self.player.m_view)
         self.clouds['m_view'].write(self.player.m_view)

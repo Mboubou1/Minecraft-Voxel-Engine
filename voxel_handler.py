@@ -16,7 +16,8 @@ class VoxelHandler:
         self.voxel_normal = None
 
         self.interaction_mode = 0  # 0: remove voxel   1: add voxel
-        self.new_voxel_id = DIRT
+        self.inventory_index = 0
+        self.new_voxel_id = INVENTORY_BLOCK_IDS[self.inventory_index]
 
     def add_voxel(self):
         if self.voxel_id:
@@ -72,6 +73,16 @@ class VoxelHandler:
 
     def switch_mode(self):
         self.interaction_mode = not self.interaction_mode
+
+
+    def cycle_inventory(self, step):
+        self.inventory_index = (self.inventory_index + step) % len(INVENTORY_BLOCK_IDS)
+        self.new_voxel_id = INVENTORY_BLOCK_IDS[self.inventory_index]
+
+    def set_inventory_slot(self, slot):
+        if 0 <= slot < len(INVENTORY_BLOCK_IDS):
+            self.inventory_index = slot
+            self.new_voxel_id = INVENTORY_BLOCK_IDS[self.inventory_index]
 
     def update(self):
         self.ray_cast()
