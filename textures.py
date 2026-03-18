@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pygame as pg
 import moderngl as mgl
 
@@ -6,6 +8,7 @@ class Textures:
     def __init__(self, app):
         self.app = app
         self.ctx = app.ctx
+        self.assets_dir = Path(__file__).resolve().parent / 'assets'
 
         # load textures
         self.texture_0 = self.load('frame.png')
@@ -18,7 +21,8 @@ class Textures:
         self.texture_1.use(location=2)
 
     def load(self, file_name, is_tex_array=False):
-        texture = pg.image.load(f'assets/{file_name}')
+        texture_path = self.assets_dir / file_name
+        texture = pg.image.load(str(texture_path))
         texture = pg.transform.flip(texture, flip_x=True, flip_y=False)
 
         if is_tex_array:
