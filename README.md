@@ -1,6 +1,10 @@
 # Minecraft Voxel Engine
 Voxel Engine (like Minecraft) in Python and OpenGL.
 
+## Installation automatique des dépendances
+- Au premier lancement, le jeu vérifie les dépendances Python et lance automatiquement `pip install -r requirements.txt` si nécessaire.
+- Un fichier marqueur `.first_launch_deps_ok` est créé pour éviter de relancer cette installation à chaque démarrage.
+
 ## Nouvelles fonctionnalités
 - Cycle jour/nuit + blocs émissifs (`GLOWSTONE`) pour une gestion de lumière simple.
 - Physique joueur: gravité, saut, collisions (désactivable avec noclip).

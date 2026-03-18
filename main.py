@@ -1,3 +1,7 @@
+from bootstrap import ensure_dependencies
+
+ensure_dependencies()
+
 from settings import *
 import moderngl as mgl
 import pygame as pg
