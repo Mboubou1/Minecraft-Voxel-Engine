@@ -16,6 +16,8 @@ class ChunkMesh(BaseMesh):
         self.vao = self.get_vao()
 
     def rebuild(self):
+        if self.vao is not None:
+            self.vao.release()
         self.vao = self.get_vao()
 
     def get_vertex_data(self):

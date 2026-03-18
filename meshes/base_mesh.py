@@ -18,6 +18,15 @@ class BaseMesh:
 
     def get_vao(self):
         vertex_data = self.get_vertex_data()
+        if vertex_data is None:
+            return None
+
+        if isinstance(vertex_data, np.ndarray):
+            if vertex_data.size == 0 or vertex_data.nbytes == 0:
+                return None
+        elif hasattr(vertex_data, "__len__") and len(vertex_data) == 0:
+            return None
+
         vbo = self.ctx.buffer(vertex_data)
         vao = self.ctx.vertex_array(
             self.program, [(vbo, self.vbo_format, *self.attrs)], skip_errors=True
@@ -25,4 +34,5 @@ class BaseMesh:
         return vao
 
     def render(self):
-        self.vao.render()
+        if self.vao is not None:
+            self.vao.render()
