@@ -39,19 +39,19 @@ class CloudMesh(BaseMesh):
         depth = WORLD_D * CHUNK_SIZE
 
         y = CLOUD_HEIGHT
-        visited = set()
+        visited = np.zeros(width * depth, dtype=np.bool_)
 
         for z in range(depth):
             for x in range(width):
 
                 idx = x + width * z
-                if not cloud_data[idx] or idx in visited:
+                if not cloud_data[idx] or visited[idx]:
                     continue
 
                 # find number of continuous quads along x
                 x_count = 1
                 idx = (x + x_count) + width * z
-                while x + x_count < width and cloud_data[idx] and idx not in visited:
+                while x + x_count < width and cloud_data[idx] and not visited[idx]:
                     x_count += 1
                     idx = (x + x_count) + width * z
 
@@ -60,7 +60,7 @@ class CloudMesh(BaseMesh):
                 for ix in range(x_count):
                     z_count = 1
                     idx = (x + ix) + width * (z + z_count)
-                    while (z + z_count) < depth and cloud_data[idx] and idx not in visited:
+                    while (z + z_count) < depth and cloud_data[idx] and not visited[idx]:
                         z_count += 1
                         idx = (x + ix) + width * (z + z_count)
                     z_count_list.append(z_count)
@@ -71,7 +71,7 @@ class CloudMesh(BaseMesh):
                 # mark all unit quads of the large quad as visited
                 for ix in range(x_count):
                     for iz in range(z_count):
-                        visited.add((x + ix) + width * (z + iz))
+                        visited[(x + ix) + width * (z + iz)] = True
 
                 v0 = x, y, z
                 v1 = x + x_count, y, z + z_count
@@ -83,5 +83,5 @@ class CloudMesh(BaseMesh):
                         mesh[index] = attr
                         index += 1
 
-        mesh = mesh[:index + 1]
+        mesh = mesh[:index]
         return mesh
