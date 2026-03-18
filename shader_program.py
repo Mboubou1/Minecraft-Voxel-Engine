@@ -24,6 +24,7 @@ class ShaderProgram:
         self.chunk['bg_color'].write(BG_COLOR)
         self.chunk['water_line'] = WATER_LINE
         self.chunk['day_light'] = 1.0
+        self.chunk['player_pos'].write(self.player.position)
 
         # marker
         self.voxel_marker['m_proj'].write(self.player.m_proj)
@@ -46,6 +47,7 @@ class ShaderProgram:
         self.chunk['m_view'].write(self.player.m_view)
         if hasattr(self.app, 'scene') and hasattr(self.app.scene, 'world'):
             self.chunk['day_light'] = self.app.scene.world.daylight
+        self.chunk['player_pos'].write(self.player.position)
         self.voxel_marker['m_view'].write(self.player.m_view)
         self.water['m_view'].write(self.player.m_view)
         self.clouds['m_view'].write(self.player.m_view)
